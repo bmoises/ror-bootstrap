@@ -4,6 +4,7 @@ require 'mysql'
 
 require 'inflection'
 require 'klasser'
+require 'permute'
 require 'pp'
 
 db = ARGV[0] || (raise 'Need to specify database')
@@ -19,9 +20,6 @@ res.each do |row|
   tables << row[0] if !(table_name =~ /^(schema_migration|schema_info)$/)
 end
 
-
-#TABLE_HEADERS = %w(Field Type Null Key Default Extra)
-
 tables.sort!
 
 # Collect columns for each table
@@ -33,7 +31,6 @@ tables.each do |table|
   res.each do |row|
     column_name = row[0]
     data[table] << column_name if !( column_name =~ /^(id|created_at|updated_at)$/)
-    #data[table][column_name] = Hash[TABLE_HEADERS.zip(row)]
   end
 end
 
@@ -60,12 +57,38 @@ data.each do |table,columns|
   klassers << klasser
 end
 
+
+# :has_and_belongs_to_many
+klassers.each do |klasser|
+  klasser.table_name.permute.each do |left|
+
+    right = klasser.table_name.gsub("#{left}_",'')
+    # if it matches, that means that this is possible a has and belongs to many
+    if klasser.belongs_to.include?(left.singular) && klasser.belongs_to.include?(right.singular)
+
+      # We delete any instance in this class
+      klasser.belongs_to.delete(left.singular)
+      klasser.belongs_to.delete(right.singular)
+
+      # We try and add the 'hbtm' relationship to respective classes
+      elems = [left,right]
+      elems.each do |elem|
+        klassers.each do |kls|
+          if kls.table_name == elem && !kls.has_and_belong_to_many.include?(elem)
+            kls.has_and_belong_to_many << (elems - [elem]).first
+          end
+        end
+      end
+    end
+  end
+  
+end
+
+
 # now that we have all klassers, go ahead and determine what the :has_many relationships are
 klassers.each do |klasser|
-  
   klasser.belongs_to.each do |bt|
     klassers.each do |kls|
-      puts "#{kls.table_name.singular} == #{bt}"
       if kls.table_name.singular == bt
         kls.has_many << klasser.table_name
       end
@@ -73,7 +96,7 @@ klassers.each do |klasser|
   end
 end
 
-# TODO :has_and_belongs_to_many
+
 
 #write out files
 klassers.each do |klasser|

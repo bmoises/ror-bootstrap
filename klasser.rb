@@ -1,13 +1,13 @@
-
 require 'FileUtils'
 
 class Klasser
   
   attr_accessor :output_directory, :file_name, :table_name, :class_name
-  attr_accessor :belongs_to, :has_many
+  attr_accessor :belongs_to, :has_many, :has_and_belong_to_many
   def initialize
     @belongs_to = []
     @has_many = []
+    @has_and_belong_to_many = []
   end
   
   def write_out!
@@ -23,7 +23,9 @@ class Klasser
         file.puts "  has_many :#{hm}"
       end
       
-      has_many
+      @has_and_belong_to_many.each do |hbtm|
+        file.puts "  has_and_belongs_to_many :#{hbtm}"
+      end
       file.puts "end"
     end
   end
