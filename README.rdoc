@@ -1,0 +1,8 @@
+What is this?
+  Given a schema with tables and associations that follow the ruby on rails conventions. This script will bootstrap your application classes. At the moment, it will generate :belongs_to, :has_many, and :has_and_belongs_to_many relationships. It currently does not differentiate between has_many and has_one, since its almost impossible to do that in code.
+
+Usage:
+ruby main.rb database output/folder
+
+* first argument: database name, it currently assumes localhost and root for host and credentials.
+* second argument: output folder where generated files should be placed.
