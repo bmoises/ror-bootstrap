@@ -57,10 +57,12 @@ data.each do |table,columns|
   klassers << klasser
 end
 
-
 # :has_and_belongs_to_many
 klassers.each do |klasser|
-  klasser.table_name.permute.each do |left|
+  lefts = klasser.table_name.permute
+  pp lefts
+  next if lefts.size < 2
+  lefts.each do |left|
 
     right = klasser.table_name.gsub("#{left}_",'')
     # if it matches, that means that this is possible a has and belongs to many
@@ -84,18 +86,16 @@ klassers.each do |klasser|
   
 end
 
-
 # now that we have all klassers, go ahead and determine what the :has_many relationships are
 klassers.each do |klasser|
   klasser.belongs_to.each do |bt|
     klassers.each do |kls|
-      if kls.table_name.singular == bt
+      if kls.table_name.singular == bt && !kls.has_and_belong_to_many.include?(klasser.table_name)
         kls.has_many << klasser.table_name
       end
     end
   end
 end
-
 
 
 #write out files
