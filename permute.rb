@@ -1,4 +1,3 @@
-require 'pp'
 class String
   def permute(delim="_")
     elements = self.split(delim)
