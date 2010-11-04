@@ -2,7 +2,7 @@ Why?
   * Do you have a database that follows the rails convention and want to generate all of the base classes?
   
 What is this?
-  * Given a schema with tables and associations that follow the ruby on rails conventions. This script will bootstrap your application classes. At the moment, it will generate :belongs_to, :has_many, and :has_and_belongs_to_many relationships. It currently does not differentiate between has_many and has_one, since its almost impossible to do that in code.
+  Given a schema with tables and associations that follow the ruby on rails conventions. This script will bootstrap your application classes. At the moment, it will generate :belongs_to, :has_many, and :has_and_belongs_to_many relationships. It currently does not differentiate between has_many and has_one, since its almost impossible to do that in code.
 
 Usage:
 ruby main.rb database output/folder
